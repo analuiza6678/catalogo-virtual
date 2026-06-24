@@ -87,12 +87,14 @@ export function ProductCard({
               </Link>
             </Button>
           )}
-          <Button asChild variant="whatsapp" className="h-11 shadow-soft" disabled={!product.is_available}>
-            <a href={productWhatsAppUrl(store, product, productUrl)} target="_blank" rel="noreferrer" aria-disabled={!product.is_available}>
-              <MessageCircle data-icon="inline-start" />
-              Tenho interesse
-            </a>
-          </Button>
+          {product.is_available ? (
+            <Button asChild variant="whatsapp" className="h-11 shadow-soft">
+              <a href={productWhatsAppUrl(store, product, productUrl)} target="_blank" rel="noreferrer">
+                <MessageCircle data-icon="inline-start" />
+                Tenho interesse
+              </a>
+            </Button>
+          ) : <Button className="h-11" disabled>Indisponivel</Button>}
         </div>
       </div>
     </motion.article>

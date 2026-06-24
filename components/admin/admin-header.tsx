@@ -40,7 +40,7 @@ const pathname = usePathname() ?? "";
 
         <nav className="flex gap-1 overflow-x-auto pb-3" aria-label="Navegacao administrativa">
           {items.map((item) => {
-            const active = pathname === item.href || (item.href !== "/admin/dashboard" && pathname.startsWith(`${item.href}/`));
+            const active = pathname === item.href || (item.href !== "/admin/dashboard" && pathname?.startsWith(`${item.href}/`));
             return (
               <Link
                 className={`inline-flex shrink-0 items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${active ? "bg-[#31523f] text-white" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
@@ -56,4 +56,3 @@ const pathname = usePathname() ?? "";
     </header>
   );
 }
-

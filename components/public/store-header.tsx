@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CircleDot, Gem, Menu, MessageCircle, X } from "lucide-react";
+import { Menu, MessageCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Store } from "@/types/catalog";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -21,12 +21,7 @@ export function StoreHeader({ store }: { store: Store }) {
     <header className="sticky top-0 z-30 border-b border-[#E7D6BF]/70 bg-[#FAF6F1]/82 backdrop-blur-xl">
       <div className="container flex min-h-[76px] items-center justify-between gap-4 py-3">
         <Link href={`/loja/${store.slug}`} className="flex items-center gap-3">
-          <span className="relative flex size-11 items-center justify-center rounded-full border border-[#1A1A1A]/20 bg-[#1A1A1A] text-[#E7D6BF] shadow-soft">
-            <Gem />
-            <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full border border-[#FAF6F1] bg-[#C8A06A] text-[#1A1A1A]">
-              <CircleDot className="size-2.5" />
-            </span>
-          </span>
+          <span className="grid size-11 place-items-center rounded-full bg-[#31523f] text-xs font-black tracking-[0.16em] text-white shadow-sm">MC</span>
           <span className="flex flex-col leading-tight">
             <span className="font-display text-[1.7rem] font-semibold leading-none text-[#1A1A1A]">{store.name}</span>
             <span className="text-[10px] uppercase tracking-[0.28em] text-[#A8834A]">Catalogo digital</span>

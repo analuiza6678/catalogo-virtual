@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { KeyRound, LockKeyhole, Mail } from "lucide-react";
+import { LockKeyhole, Mail } from "lucide-react";
 import { loginAction, requestPasswordResetAction } from "@/app/actions/auth";
 import { AuthShell } from "@/components/admin/auth-shell";
 import { ConfigStatus } from "@/components/admin/config-status";
@@ -61,4 +61,3 @@ function Field({ label, icon, children }: { label: string; icon: React.ReactNode
 function Message({ tone, children }: { tone: "error" | "success"; children: React.ReactNode }) {
   return <div className={`mt-5 rounded-xl border p-3 text-sm font-medium ${tone === "error" ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`} role={tone === "error" ? "alert" : "status"}>{children}</div>;
 }
-

@@ -63,23 +63,21 @@ export function CategoryShowcase({
   return (
     <section id="categorias" className="relative overflow-hidden bg-[#FAF7F2] py-20">
       <div className="absolute inset-x-0 top-0 h-px gold-hairline" />
-      <div className="absolute right-[-8rem] top-20 h-64 w-64 rounded-full bg-[#E4D1B7]/35 blur-3xl" />
       <div className="container">
         <SectionHeader />
         <motion.div
-          className="mt-10 grid auto-rows-[220px] gap-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
         >
-          {categories.slice(0, 8).map((category, index) => (
+          {categories.slice(0, 8).map((category) => (
             <CategoryCard
               key={category.id}
               category={category}
               count={products.filter((product) => product.category_id === category.id).length}
               onClick={() => chooseCategory(category.slug)}
-              index={index}
             />
           ))}
         </motion.div>
@@ -111,23 +109,17 @@ function CategoryCard({
   category,
   count,
   onClick,
-  index
 }: {
   category: Category;
   count: number;
   onClick: () => void;
-  index: number;
 }) {
   const data = categoryData[category.slug] ?? categoryData.presentes;
-  const isLarge = data.featured && index < 2;
-
   return (
     <motion.button
       type="button"
       onClick={onClick}
-      className={`group relative overflow-hidden rounded-[1.8rem] border border-[#E4D1B7] bg-[#FFFAF6] text-left shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-[#C7A06A] ${
-        isLarge ? "sm:col-span-2 sm:row-span-2" : ""
-      }`}
+      className="group relative aspect-[4/3] overflow-hidden rounded-[1.35rem] border border-[#E4D1B7] bg-[#FFFAF6] text-left shadow-sm outline-none transition focus-visible:ring-2 focus-visible:ring-[#C7A06A]"
       variants={{
         hidden: { opacity: 0, y: 24, scale: 0.98 },
         show: { opacity: 1, y: 0, scale: 1 }

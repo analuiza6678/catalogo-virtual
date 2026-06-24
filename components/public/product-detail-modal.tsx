@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,21 +57,23 @@ export function ProductDetailModal({
               <Info label="Estoque" value={product.stock != null ? `${product.stock} unidade(s)` : null} />
               <Info label="Observacoes" value={product.notes} />
             </div>
-            <Button asChild variant="whatsapp" size="lg">
-              <a href={productWhatsAppUrl(store, product, productUrl)} target="_blank" rel="noreferrer">
-                <MessageCircle data-icon="inline-start" />
-                Tenho interesse no WhatsApp
-              </a>
-            </Button>
+            {product.is_available ? (
+              <Button asChild variant="whatsapp" size="lg">
+                <a href={productWhatsAppUrl(store, product, productUrl)} target="_blank" rel="noreferrer">
+                  <MessageCircle data-icon="inline-start" />
+                  Tenho interesse no WhatsApp
+                </a>
+              </Button>
+            ) : <Button disabled size="lg">Produto indisponivel</Button>}
             {related.length ? (
               <div>
                 <p className="mb-3 text-sm font-semibold text-[#1F2937]">Combine tambem com</p>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {related.slice(0, 3).map((item) => (
-                    <button key={item.id} className="rounded-2xl border border-[#E7D3B5] bg-[#FFFAF6] p-3 text-left text-sm">
+                    <Link href={`/loja/${store.slug}/produto/${item.slug}`} key={item.id} className="rounded-2xl border border-[#E7D3B5] bg-[#FFFAF6] p-3 text-left text-sm transition hover:-translate-y-0.5 hover:shadow-sm">
                       <span className="block font-medium">{item.name}</span>
                       <span className="text-[#6B7280]">{formatCurrency(item.price)}</span>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               </div>

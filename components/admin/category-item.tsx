@@ -18,7 +18,8 @@ export function CategoryItem({ id, name, count }: { id: string; name: string; co
   function save(formData: FormData) {
     startTransition(async () => {
       const result = await upsertCategoryAction(formData);
-      result.ok ? toast.success(result.message) : toast.error(result.message);
+      if (result.ok) toast.success(result.message);
+      else toast.error(result.message);
       if (result.ok) setEditing(false);
       if (result.ok) router.refresh();
     });
@@ -27,7 +28,8 @@ export function CategoryItem({ id, name, count }: { id: string; name: string; co
   function remove() {
     startTransition(async () => {
       const result = await deleteCategoryAction(id);
-      result.ok ? toast.success(result.message) : toast.error(result.message);
+      if (result.ok) toast.success(result.message);
+      else toast.error(result.message);
       if (result.ok) setConfirming(false);
       if (result.ok) router.refresh();
     });
