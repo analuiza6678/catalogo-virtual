@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-const pathname = usePathname() ?? ""import { BarChart3, ExternalLink, FolderTree, LogOut, Package, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { BarChart3, ExternalLink, FolderTree, LogOut, Package, Settings } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import type { Store } from "@/types/catalog";
