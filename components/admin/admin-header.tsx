@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { BarChart3, ExternalLink, FolderTree, LogOut, Package, Settings } from "lucide-react";
+const pathname = usePathname() ?? ""import { BarChart3, ExternalLink, FolderTree, LogOut, Package, Settings } from "lucide-react";
 import { logoutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import type { Store } from "@/types/catalog";
@@ -15,8 +14,7 @@ const items = [
 ];
 
 export function AdminHeader({ store, userEmail }: { store: Store; userEmail: string }) {
-  const pathname = usePathname();
-
+const pathname = usePathname() ?? "";
   return (
     <header className="sticky top-0 z-30 border-b border-black/[0.07] bg-white/95 backdrop-blur-xl">
       <div className="mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8">
