@@ -24,6 +24,18 @@ export const signupSchema = loginSchema.extend({
   path: ["confirmPassword"]
 });
 
+export const emailSchema = z.object({
+  email: z.string().trim().email("Informe um e-mail valido.")
+});
+
+export const passwordResetSchema = z.object({
+  password: z.string().min(8, "A senha precisa ter pelo menos 8 caracteres."),
+  confirmPassword: z.string().min(8, "Confirme a senha.")
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas nao coincidem.",
+  path: ["confirmPassword"]
+});
+
 const optionalNumber = z.preprocess(
   (value) => (value === "" || value === null || value === undefined ? null : value),
   z.coerce.number().finite().nonnegative().nullable()
