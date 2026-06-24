@@ -1,10 +1,11 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { updateStoreAction } from "@/app/actions/catalog";
 import { Button } from "@/components/ui/button";
+import { ImageUploadField } from "@/components/admin/image-upload-field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +13,8 @@ import type { Store } from "@/types/catalog";
 
 export function SettingsForm({ store }: { store: Store }) {
   const [isPending, startTransition] = useTransition();
+  const [logoUrl, setLogoUrl] = useState(store.logo_url ?? "");
+  const [bannerUrl, setBannerUrl] = useState(store.banner_url ?? "");
 
   function action(formData: FormData) {
     startTransition(async () => {
@@ -27,9 +30,15 @@ export function SettingsForm({ store }: { store: Store }) {
   return (
     <form action={action} className="grid gap-5 rounded-lg border bg-white p-6 shadow-sm md:grid-cols-2">
       <Field label="Nome da loja"><Input name="name" defaultValue={store.name} required /></Field>
-      <Field label="Slug"><Input name="slug" defaultValue={store.slug} required /></Field>
-      <Field label="Logo"><Input name="logo_url" defaultValue={store.logo_url ?? ""} placeholder="https://..." /></Field>
-      <Field label="Banner principal"><Input name="banner_url" defaultValue={store.banner_url ?? ""} placeholder="https://..." /></Field>
+      <input name="slug" type="hidden" value={store.slug} />
+      <div>
+        <Field label="Logo da loja"><ImageUploadField folder="branding" onChange={setLogoUrl} value={logoUrl} /></Field>
+        <input name="logo_url" type="hidden" value={logoUrl} />
+      </div>
+      <div>
+        <Field label="Imagem principal"><ImageUploadField folder="branding" onChange={setBannerUrl} value={bannerUrl} /></Field>
+        <input name="banner_url" type="hidden" value={bannerUrl} />
+      </div>
       <Field label="WhatsApp"><Input name="whatsapp_number" defaultValue={store.whatsapp_number} required /></Field>
       <Field label="Cor principal"><Input name="primary_color" defaultValue={store.primary_color} type="color" /></Field>
       <Field label="Endereco"><Input name="address" defaultValue={store.address ?? ""} /></Field>

@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { getCurrentOwnerStore } from "@/lib/catalog-queries";
+import { ensureOwnerStore } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -11,20 +10,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     data: { user }
   } = await supabase.auth.getUser();
   if (!user) redirect("/admin/login");
-  const { data: ownerStore } = await supabase.from("stores").select("id").eq("owner_id", user.id).maybeSingle();
-  if (!ownerStore) redirect("/admin/login?error=store");
-
-  const { store } = await getCurrentOwnerStore();
+  const storeResult = await ensureOwnerStore(supabase, user.id);
+  if (!storeResult.ok) {
+    await supabase.auth.signOut();
+    redirect(`/admin/login?error=${storeResult.code === "not-owner" ? "owner-mismatch" : storeResult.code}`);
+  }
 
   return (
-    <div className="min-h-screen bg-secondary/45">
-      <div className="flex">
-        <AdminSidebar />
-        <div className="min-w-0 flex-1">
-          <AdminHeader store={store} />
-          <main className="p-4 md:p-8">{children}</main>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#faf8f3]">
+      <AdminHeader store={storeResult.store} userEmail={user.email ?? "Administrador"} />
+      <main className="mx-auto w-full max-w-[1320px] p-4 sm:p-6 lg:p-8">{children}</main>
     </div>
   );
 }

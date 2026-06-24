@@ -1,5 +1,6 @@
 import { demoCategories, demoProducts, demoStore } from "@/data/demo";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { ensureOwnerStore } from "@/lib/admin-auth";
 import type { Category, ProductWithCategory, Store } from "@/types/catalog";
 
 export async function getStoreBySlug(slug: string): Promise<Store | null> {
@@ -50,8 +51,9 @@ export async function getCurrentOwnerStore(): Promise<{ store: Store; categories
     throw new Error("Sessao expirada.");
   }
 
-  const { data: store } = await supabase.from("stores").select("*").eq("owner_id", user.id).single();
-  if (!store) throw new Error("Loja do proprietario nao encontrada.");
+  const storeResult = await ensureOwnerStore(supabase, user.id);
+  if (!storeResult.ok) throw new Error("Loja do proprietario nao encontrada.");
+  const store = storeResult.store;
 
   const [categories, products] = await Promise.all([getStoreCategories(store.id), getStoreProducts(store.id)]);
   return { store, categories, products };

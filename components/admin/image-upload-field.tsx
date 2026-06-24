@@ -11,11 +11,13 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 export function ImageUploadField({
   value,
   onChange,
-  placeholder = "https://..."
+  placeholder = "https://...",
+  folder = "products"
 }: {
   value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  folder?: "products" | "branding";
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -41,7 +43,7 @@ export function ImageUploadField({
         "image/png": "png",
         "image/webp": "webp"
       };
-      const path = `${user.id}/products/${crypto.randomUUID()}.${extensionByType[file.type]}`;
+      const path = `${user.id}/${folder}/${crypto.randomUUID()}.${extensionByType[file.type]}`;
       const { error } = await supabase.storage.from("catalog-images").upload(path, file, {
         cacheControl: "3600",
         upsert: false

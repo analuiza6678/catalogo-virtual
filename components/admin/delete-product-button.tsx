@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteProductAction } from "@/app/actions/catalog";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 export function DeleteProductButton({ productId, productName }: { productId: string; productName: string }) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   function remove() {
     startTransition(async () => {
@@ -17,6 +19,7 @@ export function DeleteProductButton({ productId, productName }: { productId: str
       if (result.ok) {
         toast.success(result.message);
         setOpen(false);
+        router.refresh();
       } else {
         toast.error(result.message);
       }

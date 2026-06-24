@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FolderTree, Megaphone, Package, Plus, Star, XCircle } from "lucide-react";
+import { FolderTree, Megaphone, Package, PackagePlus, Plus, Star, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ export default async function DashboardPage() {
         <StatCard title="Promocoes" value={products.filter((item) => item.is_promotion).length} icon={Megaphone} />
         <StatCard title="Indisponiveis" value={products.filter((item) => !item.is_available).length} icon={XCircle} />
       </div>
-      <Card className="rounded-lg bg-white">
+      {products.length ? <Card className="rounded-lg bg-white">
         <CardHeader>
           <CardTitle>Produtos recentes</CardTitle>
         </CardHeader>
@@ -61,7 +61,14 @@ export default async function DashboardPage() {
             </tbody>
           </table>
         </CardContent>
-      </Card>
+      </Card> : (
+        <div className="rounded-xl border border-dashed bg-white px-6 py-14 text-center">
+          <PackagePlus className="mx-auto size-8 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">Comece adicionando seu primeiro produto</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Depois ele aparecera automaticamente no catalogo publico.</p>
+          <Button asChild className="mt-5"><Link href="/admin/produtos/novo">Adicionar produto</Link></Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { PostgrestError } from "@supabase/supabase-js";
+import { ensureOwnerStore } from "@/lib/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
 import { categorySchema, productSchema, storeSchema } from "@/lib/validators";
@@ -14,9 +16,16 @@ async function requireUserStore() {
   } = await supabase.auth.getUser();
   if (!user) return { supabase: null, store: null, error: "Sessao expirada. Entre novamente." };
 
-  const { data: store } = await supabase.from("stores").select("*").eq("owner_id", user.id).single();
-  if (!store) return { supabase: null, store: null, error: "A loja do proprietario nao foi encontrada." };
-  return { supabase, store, error: null };
+  const storeResult = await ensureOwnerStore(supabase, user.id);
+  if (!storeResult.ok) return { supabase: null, store: null, error: "Nao foi possivel confirmar a loja do administrador." };
+  return { supabase, store: storeResult.store, error: null };
+}
+
+function databaseMessage(error: PostgrestError, subject: string) {
+  if (error.code === "23505") return `Ja existe ${subject} com este nome.`;
+  if (error.code === "23503") return `${subject} ainda esta sendo usado por outro cadastro.`;
+  if (error.code === "42501") return "Sua sessao expirou ou nao possui permissao. Entre novamente.";
+  return `Nao foi possivel salvar ${subject}. Tente novamente.`;
 }
 
 export async function upsertProductAction(formData: FormData) {
@@ -43,7 +52,7 @@ export async function upsertProductAction(formData: FormData) {
     ? await supabase.from("products").update(payload).eq("id", id).eq("store_id", store.id)
     : await supabase.from("products").insert(payload);
 
-  if (result.error) return { ok: false, message: result.error.message };
+  if (result.error) return { ok: false, message: databaseMessage(result.error, "um produto") };
   revalidatePath("/admin/produtos");
   revalidatePath(`/loja/${store.slug}`);
   return { ok: true, message: "Produto salvo com sucesso." };
@@ -54,7 +63,7 @@ export async function deleteProductAction(productId: string) {
   if (!supabase || !store) return { ok: false, message: authError ?? "Acesso negado." };
 
   const { error } = await supabase.from("products").delete().eq("id", productId).eq("store_id", store.id);
-  if (error) return { ok: false, message: error.message };
+  if (error) return { ok: false, message: databaseMessage(error, "o produto") };
   revalidatePath("/admin/produtos");
   return { ok: true, message: "Produto excluido." };
 }
@@ -72,9 +81,20 @@ export async function upsertCategoryAction(formData: FormData) {
     ? await supabase.from("categories").update(payload).eq("id", id).eq("store_id", store.id)
     : await supabase.from("categories").insert(payload);
 
-  if (result.error) return { ok: false, message: result.error.message };
+  if (result.error) return { ok: false, message: databaseMessage(result.error, "uma categoria") };
   revalidatePath("/admin/categorias");
   return { ok: true, message: "Categoria salva." };
+}
+
+export async function deleteCategoryAction(categoryId: string) {
+  const { supabase, store, error: authError } = await requireUserStore();
+  if (!supabase || !store) return { ok: false, message: authError ?? "Acesso negado." };
+
+  const { error } = await supabase.from("categories").delete().eq("id", categoryId).eq("store_id", store.id);
+  if (error) return { ok: false, message: databaseMessage(error, "a categoria") };
+  revalidatePath("/admin/categorias");
+  revalidatePath(`/loja/${store.slug}`);
+  return { ok: true, message: "Categoria removida." };
 }
 
 export async function updateStoreAction(formData: FormData) {
@@ -84,9 +104,10 @@ export async function updateStoreAction(formData: FormData) {
   const { supabase, store, error: authError } = await requireUserStore();
   if (!supabase || !store) return { ok: false, message: authError ?? "Acesso negado." };
 
-  const { error } = await supabase.from("stores").update(parsed.data).eq("id", store.id).eq("owner_id", store.owner_id);
-  if (error) return { ok: false, message: error.message };
+  const payload = { ...parsed.data, slug: store.slug };
+  const { error } = await supabase.from("stores").update(payload).eq("id", store.id).eq("owner_id", store.owner_id);
+  if (error) return { ok: false, message: databaseMessage(error, "as configuracoes") };
   revalidatePath("/admin/configuracoes");
-  revalidatePath(`/loja/${parsed.data.slug}`);
+  revalidatePath(`/loja/${store.slug}`);
   return { ok: true, message: "Loja atualizada." };
 }

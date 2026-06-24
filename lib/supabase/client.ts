@@ -1,12 +1,14 @@
 "use client";
 
 import { createBrowserClient } from "@supabase/ssr";
+import { getSupabaseConfigStatus } from "@/lib/supabase/config";
 
 export function createSupabaseBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const config = getSupabaseConfigStatus();
+  const url = config.supabaseUrl;
+  const anonKey = config.anonKey;
 
-  if (!url || !anonKey) {
+  if (!config.isConfigured || !url || !anonKey) {
     throw new Error("Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.");
   }
 

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Edit, Plus } from "lucide-react";
+import { Edit, PackagePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DeleteProductButton } from "@/components/admin/delete-product-button";
@@ -21,7 +21,7 @@ export default async function ProductsPage() {
           <Link href="/admin/produtos/novo"><Plus data-icon="inline-start" />Novo produto</Link>
         </Button>
       </div>
-      <div className="overflow-hidden rounded-lg border bg-white shadow-sm">
+      {products.length ? <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
             <thead className="bg-secondary/70 text-left text-muted-foreground">
@@ -69,7 +69,14 @@ export default async function ProductsPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> : (
+        <div className="rounded-xl border border-dashed bg-white px-6 py-14 text-center">
+          <PackagePlus className="mx-auto size-8 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">Sua vitrine esta pronta para o primeiro produto</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Cadastre uma imagem, nome, preco e disponibilidade.</p>
+          <Button asChild className="mt-5"><Link href="/admin/produtos/novo"><Plus data-icon="inline-start" />Adicionar produto</Link></Button>
+        </div>
+      )}
     </div>
   );
 }

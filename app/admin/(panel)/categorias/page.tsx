@@ -1,35 +1,33 @@
-import { FolderTree } from "lucide-react";
+import { FolderPlus } from "lucide-react";
 import { CategoryForm } from "@/components/admin/category-form";
-import { Card, CardContent } from "@/components/ui/card";
+import { CategoryItem } from "@/components/admin/category-item";
 import { getCurrentOwnerStore } from "@/lib/catalog-queries";
 
 export default async function CategoriesPage() {
   const { categories, products } = await getCurrentOwnerStore();
+  const counts = new Map<string, number>();
+  products.forEach((product) => {
+    if (product.category_id) counts.set(product.category_id, (counts.get(product.category_id) ?? 0) + 1);
+  });
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
+      <header>
         <h2 className="text-3xl font-semibold tracking-normal">Categorias</h2>
-        <p className="mt-2 text-muted-foreground">Organize filtros para facilitar a navegacao do cliente.</p>
-      </div>
+        <p className="mt-2 text-muted-foreground">Organize os produtos para facilitar a busca na loja.</p>
+      </header>
       <CategoryForm />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {categories.map((category) => (
-          <Card key={category.id} className="rounded-lg bg-white">
-            <CardContent className="flex items-center justify-between gap-4 p-5">
-              <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-lg bg-secondary text-primary">
-                  <FolderTree />
-                </span>
-                <div>
-                  <p className="font-semibold">{category.name}</p>
-                  <p className="text-sm text-muted-foreground">{products.filter((product) => product.category_id === category.id).length} produto(s)</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {categories.length ? (
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {categories.map((category) => <CategoryItem count={counts.get(category.id) ?? 0} id={category.id} key={category.id} name={category.name} />)}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed bg-white px-6 py-14 text-center">
+          <FolderPlus className="mx-auto size-8 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">Crie sua primeira categoria</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Exemplos: Bolsas, Joias, Beleza ou Presentes.</p>
+        </div>
+      )}
     </div>
   );
 }
